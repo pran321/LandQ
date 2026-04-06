@@ -1,0 +1,213 @@
+{
+  "info": {
+    "name": "Land Selling Platform API",
+    "description": "Complete API collection for Land Selling Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"1234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Lands",
+      "item": [
+        {
+          "name": "Get All Lands",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/lands",
+              "host": ["{{base_url}}"],
+              "path": ["api", "lands"]
+            }
+          }
+        },
+        {
+          "name": "Get Lands with Filters",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/lands?city=Springfield&minPrice=10000&maxPrice=100000",
+              "host": ["{{base_url}}"],
+              "path": ["api", "lands"],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Springfield"
+                },
+                {
+                  "key": "minPrice",
+                  "value": "10000"
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "100000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Land by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/lands/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "lands", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "land_id_here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Land (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Beautiful Farm Land",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Perfect for agriculture",
+                  "type": "text"
+                },
+                {
+                  "key": "price",
+                  "value": "50000",
+                  "type": "text"
+                },
+                {
+                  "key": "size",
+                  "value": "5000",
+                  "type": "text"
+                },
+                {
+                  "key": "length",
+                  "value": "100",
+                  "type": "text"
+                },
+                {
+                  "key": "breadth",
+                  "value": "50",
+                  "type": "text"
+                },
+                {
+                  "key": "location",
+                  "value": "Rural Area",
+                  "type": "text"
+                },
+                {
+                  "key": "city",
+                  "value": "Springfield",
+                  "type": "text"
+                },
+                {
+                  "key": "state",
+                  "value": "Illinois",
+                  "type": "text"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/lands",
+              "host": ["{{base_url}}"],
+              "path": ["api", "lands"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "token",
+      "value": "your_jwt_token_here"
+    }
+  ]
+}

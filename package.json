@@ -1,0 +1,24 @@
+{
+  "name": "land-selling-platform",
+  "version": "1.0.0",
+  "description": "Full-stack land selling platform with MERN stack",
+  "scripts": {
+    "install-all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+    "build": "cd backend && npm run build && cd ../frontend && npm run build"
+  },
+  "keywords": [
+    "mern",
+    "land-selling",
+    "real-estate",
+    "mongodb",
+    "express",
+    "react",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
