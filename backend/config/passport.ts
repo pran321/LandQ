@@ -1,6 +1,10 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import User, { UserType } from '../models/user';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 // Only configure Google Strategy if credentials are provided
 const googleClientId = process.env.GOOGLE_CLIENT_ID;

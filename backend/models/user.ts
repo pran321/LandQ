@@ -22,6 +22,9 @@ export interface IUser extends Document {
   bio?: string;
   googleId?: string;
   authProvider: 'local' | 'google';
+  aadhaarNumber?: string;
+  aadhaarVerified: boolean;
+  aadhaarDocument?: string;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
@@ -79,6 +82,25 @@ const userSchema = new Schema<IUser>(
       default: null,
     },
     bio: {
+      type: String,
+      default: null,
+    },
+    aadhaarNumber: {
+      type: String,
+      unique: true,
+      sparse: true,
+      validate: {
+        validator: function(v: string) {
+          return !v || /^\d{12}$/.test(v);
+        },
+        message: 'Aadhaar number must be 12 digits'
+      }
+    },
+    aadhaarVerified: {
+      type: Boolean,
+      default: false,
+    },
+    aadhaarDocument: {
       type: String,
       default: null,
     },

@@ -8,10 +8,11 @@ import {
   getMyLands 
 } from '../controller/landController';
 import { authenticate, authorize } from '../middleware/auth';
+import { requireAadhaarVerification } from '../middleware/aadhaarCheck';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import { UserRole } from '../models/user';
+import { UserRole, UserType } from '../models/user';
 
 // Ensure upload directories exist
 const uploadDirs = ['uploads/lands', 'uploads/documents'];
@@ -46,11 +47,11 @@ const uploadLandFiles = multer({
 
 const router = Router();
 
-router.post('/', authenticate, authorize(UserRole.ADMIN), uploadLandFiles, createLand);
+router.post('/', authenticate, authorize(UserRole.ADMIN, UserType.SELLER), requireAadhaarVerification, uploadLandFiles, createLand);
 router.get('/', getAllLands);
 router.get('/my-lands', authenticate, getMyLands);
 router.get('/:id', getLandById);
-router.put('/:id', authenticate, uploadLandFiles, updateLand);
-router.delete('/:id', authenticate, deleteLand);
+router.put('/:id', authenticate, requireAadhaarVerification, uploadLandFiles, updateLand);
+router.delete('/:id', authenticate, requireAadhaarVerification, deleteLand);
 
 export default router;

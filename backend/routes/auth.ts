@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { register, login, logout, getCurrentUser, googleAuthSuccess, googleAuthFailure } from '../controller/authController';
 import { authenticate } from '../middleware/auth';
 import passport from '../config/passport';
+import dotenv from 'dotenv';
+dotenv.config()
 
 const router = Router();
 
@@ -35,13 +37,13 @@ if (isGoogleConfigured) {
   router.get('/google/failure', googleAuthFailure);
 } else {
   // Fallback routes when Google OAuth is not configured
-  router.get('/google', (req, res) => {
+  router.get('/google', (_req, res) => {
     res.status(503).json({ 
       message: 'Google OAuth is not configured. Please add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to .env file.' 
     });
   });
   
-  router.get('/google/callback', (req, res) => {
+  router.get('/google/callback', (_req, res) => {
     res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=google_not_configured`);
   });
 }

@@ -37,6 +37,14 @@ const Navbar = () => {
                 >
                   Dashboard
                 </Link>
+                {user.userType === 'seller' && (
+                  <Link
+                    to="/add-land"
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+                  >
+                    ➕ Add Land
+                  </Link>
+                )}
                 {user.role === 'admin' && (
                   <Link
                     to="/admin"

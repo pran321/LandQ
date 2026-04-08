@@ -108,4 +108,16 @@ export const analyticsService = {
   getSellerAnalytics: () => api.get('/analytics/seller'),
 };
 
+export const aadhaarService = {
+  submitAadhaar: (formData: FormData) =>
+    api.post('/aadhaar/submit', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  getStatus: () => api.get('/aadhaar/status'),
+  getPendingVerifications: () => api.get('/aadhaar/pending'),
+  getVerifiedUsers: () => api.get('/aadhaar/verified'),
+  verifyAadhaar: (userId: string, verified: boolean) =>
+    api.put(`/aadhaar/verify/${userId}`, { verified }),
+};
+
 export default api;

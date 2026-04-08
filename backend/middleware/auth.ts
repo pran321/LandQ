@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import User, { UserRole } from '../models/user';
+import User, { UserRole, UserType } from '../models/user';
 
 export interface AuthRequest extends Request {
   user?: any;
@@ -28,13 +28,17 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
   }
 };
 
-export const authorize = (...roles: UserRole[]) => {
+export const authorize = (...allowedRolesOrTypes: (UserRole | UserType)[]) => {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user) {
       return res.status(401).json({ message: 'Not authenticated' });
     }
 
-    if (!roles.includes(req.user.role)) {
+    const hasAccess = allowedRolesOrTypes.some(
+      (roleOrType) => req.user.role === roleOrType || req.user.userType === roleOrType
+    );
+
+    if (!hasAccess) {
       return res.status(403).json({ message: 'Not authorized to access this route' });
     }
 

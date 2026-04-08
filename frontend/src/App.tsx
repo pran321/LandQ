@@ -9,6 +9,9 @@ import LandListing from './pages/LandListing';
 import LandDetails from './pages/LandDetails';
 import AdminPanel from './pages/AdminPanel';
 import GoogleCallback from './pages/GoogleCallback';
+import AddLand from './pages/AddLand';
+import AadhaarVerification from './pages/AadhaarVerification';
+import AadhaarAdmin from './pages/AadhaarAdmin';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -29,6 +32,30 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/add-land"
+              element={
+                <ProtectedRoute>
+                  <AddLand />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/aadhaar-verification"
+              element={
+                <ProtectedRoute>
+                  <AadhaarVerification />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/aadhaar"
+              element={
+                <ProtectedRoute adminOnly>
+                  <AadhaarAdmin />
                 </ProtectedRoute>
               }
             />

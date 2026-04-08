@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { landService } from '../services/api';
 
 const AdminPanel = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('add');
   const [myLands, setMyLands] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -167,6 +169,12 @@ const AdminPanel = () => {
           }`}
         >
           📋 Manage Lands
+        </button>
+        <button
+          onClick={() => navigate('/admin/aadhaar')}
+          className="px-6 py-3 font-medium text-gray-600 hover:text-green-600"
+        >
+          🆔 Aadhaar Verification
         </button>
       </div>
 

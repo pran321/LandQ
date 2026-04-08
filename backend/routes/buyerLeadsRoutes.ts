@@ -7,10 +7,11 @@ import {
   deleteLead 
 } from '../controller/buyerLeadsController';
 import { authenticate } from '../middleware/auth';
+import { requireAadhaarVerification } from '../middleware/aadhaarCheck';
 
 const router = Router();
 
-router.post('/', authenticate, createLead);
+router.post('/', authenticate, requireAadhaarVerification, createLead);
 router.get('/my-leads', authenticate, getMyLeads);
 router.get('/received', authenticate, getLeadsForMyLands);
 router.put('/:id/status', authenticate, updateLeadStatus);

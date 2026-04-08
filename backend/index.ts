@@ -18,6 +18,7 @@ import comparisonRoutes from './routes/comparisonRoutes';
 import priceOfferRoutes from './routes/priceOfferRoutes';
 import reviewRoutes from './routes/reviewRoutes';
 import analyticsRoutes from './routes/analyticsRoutes';
+import aadhaarRoutes from './routes/aadhaarRoutes';
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/uploads/lands', express.static(path.join(__dirname, '../uploads/lands')));
 app.use('/uploads/profiles', express.static(path.join(__dirname, '../uploads/profiles')));
 app.use('/uploads/documents', express.static(path.join(__dirname, '../uploads/documents')));
+app.use('/uploads/aadhaar', express.static(path.join(__dirname, '../uploads/aadhaar')));
 
 // Connect to MongoDB
 connectDB();
@@ -51,6 +53,7 @@ app.use('/api/comparisons', comparisonRoutes);
 app.use('/api/price-offers', priceOfferRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/aadhaar', aadhaarRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
