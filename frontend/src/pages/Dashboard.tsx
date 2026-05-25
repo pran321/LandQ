@@ -10,6 +10,7 @@ const Dashboard = () => {
   const [myLands, setMyLands] = useState([]);
   const [savedLands, setSavedLands] = useState([]);
   const [myLeads, setMyLeads] = useState([]);
+  const [receivedLeads, setReceivedLeads] = useState([]);
   const [activeTab, setActiveTab] = useState('saved');
   const [loading, setLoading] = useState(true);
   const [aadhaarStatus, setAadhaarStatus] = useState<any>(null);
@@ -31,6 +32,10 @@ const Dashboard = () => {
       } else if (activeTab === 'leads') {
         const response = await buyerLeadService.getMyLeads();
         setMyLeads(response.data.leads);
+      } else if (activeTab === 'received' && user?.userType === 'seller') {
+        const response = await buyerLeadService.getLeadsForMyLands();
+        console.log('Received Leads Response:', response.data);
+        setReceivedLeads(response.data.leads);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -54,6 +59,15 @@ const Dashboard = () => {
       fetchData();
     } catch (error: any) {
       alert(error.response?.data?.message || 'Failed to unsave land');
+    }
+  };
+
+  const handleUpdateLeadStatus = async (leadId: string, status: string) => {
+    try {
+      await buyerLeadService.updateLeadStatus(leadId, status);
+      fetchData();
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Failed to update status');
     }
   };
 
@@ -152,16 +166,30 @@ const Dashboard = () => {
             🏞️ My Lands
           </button>
         )}
-        <button
-          onClick={() => setActiveTab('leads')}
-          className={`px-6 py-3 font-medium whitespace-nowrap ${
-            activeTab === 'leads'
-              ? 'border-b-2 border-green-600 text-green-600'
-              : 'text-gray-600'
-          }`}
-        >
-          📧 My Inquiries
-        </button>
+        {user?.userType === 'buyer' && (
+          <button
+            onClick={() => setActiveTab('leads')}
+            className={`px-6 py-3 font-medium whitespace-nowrap ${
+              activeTab === 'leads'
+                ? 'border-b-2 border-green-600 text-green-600'
+                : 'text-gray-600'
+            }`}
+          >
+            📧 My Inquiries ({myLeads.length})
+          </button>
+        )}
+        {user?.userType === 'seller' && (
+          <button
+            onClick={() => setActiveTab('received')}
+            className={`px-6 py-3 font-medium whitespace-nowrap ${
+              activeTab === 'received'
+                ? 'border-b-2 border-green-600 text-green-600'
+                : 'text-gray-600'
+            }`}
+          >
+            📬 Received Inquiries ({receivedLeads.length})
+          </button>
+        )}
       </div>
 
       {/* Content */}
@@ -276,6 +304,181 @@ const Dashboard = () => {
                 <div className="text-center py-20 bg-white rounded-lg">
                   <p className="text-6xl mb-4">📭</p>
                   <p className="text-gray-500 text-lg">No inquiries sent yet</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Received Inquiries Tab (Sellers Only) */}
+          {activeTab === 'received' && user?.userType === 'seller' && (
+            <div className="space-y-4">
+              {/* Debug Section */}
+              <div className="bg-yellow-50 border border-yellow-300 p-4 rounded-lg text-sm">
+                <p>Total Inquiries: {receivedLeads.length}</p>
+              </div>
+              
+              {receivedLeads.length > 0 ? (
+                receivedLeads.map((lead: any) => (
+                  <div key={lead._id} className="bg-white p-6 rounded-lg shadow-md">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold text-gray-800">
+                          {lead.landId?.title}
+                        </h3>
+                        <p className="text-gray-600">
+                          📍 {lead.landId?.city}, {lead.landId?.state}
+                        </p>
+                        <div className="mt-3 flex items-center gap-3">
+                          <img
+                            src={lead.buyerId?.profilePicture || 'https://via.placeholder.com/40'}
+                            alt={lead.buyerId?.name}
+                            className="w-10 h-10 rounded-full"
+                          />
+                          <div>
+                            <p className="font-semibold text-gray-800">{lead.buyerId?.name}</p>
+                            <p className="text-sm text-gray-600">{lead.buyerId?.email}</p>
+                            {lead.buyerId?.phone && (
+                              <p className="text-sm text-gray-600">📞 {lead.buyerId?.phone}</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm ${
+                          lead.status === 'pending'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : lead.status === 'contacted'
+                            ? 'bg-blue-100 text-blue-800'
+                            : lead.status === 'interested'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}
+                      >
+                        {lead.status}
+                      </span>
+                    </div>
+                    <div className="bg-blue-50 p-4 rounded-lg mb-4">
+                      <p className="text-gray-700">
+                        <strong>Buyer's Message:</strong> {lead.message}
+                      </p>
+                    </div>
+                    
+                    {/* Contact Buyer Section */}
+                    <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                      <h4 className="font-semibold text-gray-800 mb-3">Contact Buyer:</h4>
+                      <div className="flex gap-2 flex-wrap">
+                        {lead.buyerId?.email && (
+                          <a
+                            href={`mailto:${lead.buyerId.email}?subject=Regarding your inquiry for ${lead.landId?.title}&body=Hi ${lead.buyerId.name},%0D%0A%0D%0AThank you for your interest in my property "${lead.landId?.title}".%0D%0A%0D%0A`}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm flex items-center gap-2"
+                          >
+                            📧 Send Email
+                          </a>
+                        )}
+                        {lead.buyerId?.phone && (
+                          <>
+                            <a
+                              href={`tel:${lead.buyerId.phone}`}
+                              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm flex items-center gap-2"
+                            >
+                              📞 Call
+                            </a>
+                            <a
+                              href={`https://wa.me/${lead.buyerId.phone.replace(/[^0-9]/g, '')}?text=Hi ${lead.buyerId.name}, I'm the seller of "${lead.landId?.title}". Thank you for your interest!`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm flex items-center gap-2"
+                            >
+                              💬 WhatsApp
+                            </a>
+                          </>
+                        )}
+                        <button
+                          onClick={() => {
+                            const contactInfo = `
+Buyer Contact Information:
+━━━━━━━━━━━━━━━━━━━━━━
+Name: ${lead.buyerId?.name}
+Email: ${lead.buyerId?.email}
+Phone: ${lead.buyerId?.phone || 'Not provided'}
+Property: ${lead.landId?.title}
+Location: ${lead.landId?.city}, ${lead.landId?.state}
+
+Message: ${lead.message}
+━━━━━━━━━━━━━━━━━━━━━━`;
+                            navigator.clipboard.writeText(contactInfo);
+                            alert('Contact information copied to clipboard!');
+                          }}
+                          className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 text-sm flex items-center gap-2"
+                        >
+                          📋 Copy Info
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Status Update Buttons */}
+                    <div className="border-t pt-4">
+                      <h4 className="font-semibold text-gray-800 mb-3 text-sm">Update Status:</h4>
+                      <div className="flex gap-2 flex-wrap">
+                        {lead.status === 'pending' && (
+                          <>
+                            <button
+                              onClick={() => handleUpdateLeadStatus(lead._id, 'contacted')}
+                              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                            >
+                              ✓ Mark as Contacted
+                            </button>
+                            <button
+                              onClick={() => handleUpdateLeadStatus(lead._id, 'interested')}
+                              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
+                            >
+                              ⭐ Mark as Interested
+                            </button>
+                            <button
+                              onClick={() => handleUpdateLeadStatus(lead._id, 'rejected')}
+                              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm"
+                            >
+                              ✗ Reject
+                            </button>
+                          </>
+                        )}
+                        {lead.status === 'contacted' && (
+                          <>
+                            <button
+                              onClick={() => handleUpdateLeadStatus(lead._id, 'interested')}
+                              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
+                            >
+                              ⭐ Mark as Interested
+                            </button>
+                            <button
+                              onClick={() => handleUpdateLeadStatus(lead._id, 'rejected')}
+                              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm"
+                            >
+                              ✗ Reject
+                            </button>
+                          </>
+                        )}
+                        {(lead.status === 'interested' || lead.status === 'rejected') && (
+                          <p className="text-sm text-gray-600 italic">
+                            {lead.status === 'interested' 
+                              ? '✓ You marked this inquiry as interested' 
+                              : '✗ This inquiry was rejected'}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-3">
+                      Received on {new Date(lead.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-20 bg-white rounded-lg">
+                  <p className="text-6xl mb-4">📬</p>
+                  <p className="text-gray-500 text-lg">No inquiries received yet</p>
+                  <p className="text-gray-400 text-sm mt-2">
+                    Buyers will be able to send inquiries about your land listings
+                  </p>
                 </div>
               )}
             </div>
